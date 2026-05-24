@@ -34,7 +34,7 @@ const PROJECTS = [
     name: "Terminal Portfolio",
     desc: "A personal portfolio website that mimics a terminal interface, built with React.",
     tech: ["React", "HTML", "JavaScript", "CSS"],
-    link: "https://github.com/",
+    link: "github.com/DHHHDodangoda/Portfolio",
     status: "in progress",
   },
 ];
@@ -111,6 +111,9 @@ const s = {
     gap: "8px",
     position: "sticky",
     top: 0,
+    left: 0,
+    width: "100%",
+    boxSizing: "border-box",
     zIndex: 10,
   },
   dot: (color) => ({
