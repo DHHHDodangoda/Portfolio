@@ -19,10 +19,10 @@ const SKILLS = {
   frameworks: ["React", "Flutter"],
   tools: [
     "Docker",
-    "XAMPP",
     "Android Studio",
     "Xcode",
     "VSCode",
+    "XAMPP",
     "Jupyter Notebooks",
     "Git",
   ],
