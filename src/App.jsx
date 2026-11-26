@@ -135,7 +135,12 @@ const s = {
   host: { color: C.cyan },
   dollar: { color: C.text },
   cmd: { color: C.text },
-  output: { marginBottom: "20px", paddingLeft: "0" },
+  output: {
+    marginBottom: "20px",
+    paddingLeft: "0",
+    overflowWrap: "anywhere",
+    wordBreak: "break-word",
+  },
   line: { marginBottom: "2px" },
   label: (color = C.accent) => ({ color, fontWeight: "bold" }),
   tag: (color = C.surface) => ({
@@ -224,7 +229,7 @@ const ASCII_BANNER = `
 function Banner() {
   return (
     <div style={s.output}>
-      <pre style={s.ascii}>{ASCII_BANNER}</pre>
+      <pre className="terminal-ascii" style={s.ascii}>{ASCII_BANNER}</pre>
       <div style={{ color: C.muted, marginTop: "4px" }}>
         Welcome to <span style={{ color: C.accent }}>Hivin&apos;s</span> terminal portfolio.
         Type <span style={{ color: C.green }}>&apos;help&apos;</span> to see available commands.
@@ -238,8 +243,8 @@ function HelpOutput({ content }) {
     <div style={s.output}>
       <div style={{ color: C.muted, marginBottom: "8px" }}>Available commands:</div>
       {content.map(({ cmd, desc }) => (
-        <div key={cmd} style={{ display: "flex", gap: "0", marginBottom: "3px" }}>
-          <span style={{ color: C.green, minWidth: "120px" }}>{cmd}</span>
+        <div key={cmd} className="terminal-help-row" style={{ display: "flex", gap: "0", marginBottom: "3px" }}>
+          <span className="terminal-help-command" style={{ color: C.green, minWidth: "120px" }}>{cmd}</span>
           <span style={{ color: C.muted }}>— {desc}</span>
         </div>
       ))}
@@ -250,15 +255,15 @@ function HelpOutput({ content }) {
 function AboutOutput() {
   return (
     <div style={s.output}>
-      <div style={{ marginBottom: "10px" }}>
+      <div className="terminal-detail-row" style={{ marginBottom: "10px" }}>
         <span style={s.label(C.cyan)}>Name:       </span>
         <span>{ABOUT.name}</span>
       </div>
-      <div style={{ marginBottom: "10px" }}>
+      <div className="terminal-detail-row" style={{ marginBottom: "10px" }}>
         <span style={s.label(C.cyan)}>Title:      </span>
         <span style={{ color: C.muted }}>{ABOUT.title}</span>
       </div>
-      <div style={{ marginBottom: "10px" }}>
+      <div className="terminal-detail-row" style={{ marginBottom: "10px" }}>
         <span style={s.label(C.cyan)}>University: </span>
         <span style={{ color: C.purple }}>{ABOUT.university}</span>
       </div>
@@ -300,7 +305,7 @@ function SkillsOutput() {
 function ProjectsOutput() {
   return (
     <div style={s.output}>
-      {PROJECTS.map((p, i) => (
+      {PROJECTS.map((p) => (
         <div
           key={p.name}
           style={{
@@ -324,9 +329,10 @@ function ProjectsOutput() {
           <div style={{ fontSize: "12px", color: C.muted }}>
             <span style={{ color: C.purple }}>link</span>{" "}
             <a
-              href={p.link}
+              href={`https://${p.link}`}
               target="_blank"
               rel="noreferrer"
+              className="terminal-project-link"
               style={{ color: C.accent, textDecoration: "none" }}
             >
               {p.link}
@@ -348,7 +354,7 @@ function ContactOutput() {
   return (
     <div style={s.output}>
       {rows.map(({ icon, label, value, href }) => (
-        <div key={label} style={{ display: "flex", gap: "12px", marginBottom: "8px", alignItems: "center" }}>
+        <div key={label} className="terminal-contact-row" style={{ display: "flex", gap: "12px", marginBottom: "8px", alignItems: "center" }}>
           <span style={{ color: C.muted, minWidth: "16px" }}>{icon}</span>
           <span style={{ color: C.cyan, minWidth: "80px" }}>{label}</span>
           {href ? (
@@ -462,12 +468,12 @@ function HistoryEntry({ input, output }) {
 
   return (
     <div>
-      <div style={s.prompt}>
+      <div className="terminal-history-prompt" style={s.prompt}>
         <span style={s.ps1}>{USER}</span>
         <span style={s.at}>@</span>
         <span style={s.host}>{HOSTNAME}</span>
         <span style={s.at}>:~$</span>
-        <span style={{ ...s.cmd, marginLeft: "6px" }}>{input}</span>
+        <span className="terminal-history-command" style={{ ...s.cmd, marginLeft: "6px" }}>{input}</span>
       </div>
       {renderOutput()}
     </div>
@@ -541,26 +547,182 @@ export default function TerminalPortfolio() {
     <>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: ${C.bg}; }
+        html, body, #root { width: 100%; min-height: 100%; }
+        html { background: ${C.bg}; }
+        body {
+          background: ${C.bg};
+          min-width: 320px;
+          overflow-x: hidden;
+          -webkit-text-size-adjust: 100%;
+        }
+        img, pre, video, canvas, svg { max-width: 100%; }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: ${C.bg}; }
         ::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 3px; }
         a:hover { text-decoration: underline !important; }
+        .terminal-ascii {
+          max-width: 100%;
+          overflow-x: auto;
+          overflow-y: hidden;
+          scrollbar-width: thin;
+        }
+        .terminal-output,
+        .terminal-history-prompt,
+        .terminal-project-link,
+        .terminal-contact-row a {
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+        .terminal-history-command {
+          min-width: 0;
+        }
+
+        @media (min-width: 861px) {
+          .terminal-window { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+          .terminal-body { padding-top: 76px !important; }
+        }
+
+        @media (max-width: 860px) {
+          .terminal-window {
+            max-width: 100% !important;
+            padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
+          }
+          .terminal-body {
+            padding: 64px 16px 0 !important;
+          }
+          .terminal-titlebar {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            padding-top: calc(10px + env(safe-area-inset-top)) !important;
+            height: auto;
+          }
+          .terminal-input-row {
+            padding: 10px 16px calc(10px + env(safe-area-inset-bottom)) !important;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .terminal-body {
+            padding: 58px 12px 0 !important;
+          }
+          .terminal-titlebar {
+            gap: 6px !important;
+          }
+          .terminal-titlebar-dot {
+            width: 9px !important;
+            height: 9px !important;
+          }
+          .terminal-title-text {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px !important;
+          }
+          .terminal-ascii {
+            font-size: 4px !important;
+            line-height: 1.1 !important;
+            padding-bottom: 4px;
+          }
+          .terminal-help-row {
+            align-items: flex-start;
+            margin-bottom: 6px !important;
+          }
+          .terminal-help-command {
+            min-width: 82px !important;
+          }
+          .terminal-detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          }
+          .terminal-detail-row > span:last-child {
+            padding-left: 0;
+          }
+          .terminal-contact-row {
+            display: grid !important;
+            grid-template-columns: 16px minmax(64px, 80px) minmax(0, 1fr);
+            align-items: start !important;
+            gap: 8px !important;
+          }
+          .terminal-history-prompt {
+            flex-wrap: wrap;
+            row-gap: 2px;
+          }
+          .terminal-history-command {
+            flex: 1 1 180px;
+          }
+          .terminal-input-row {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+          }
+          .terminal-input-inner {
+            gap: 4px !important;
+          }
+          .terminal-input {
+            min-width: 0;
+            width: 100%;
+            font-size: 16px !important;
+          }
+          .terminal-tag {
+            white-space: normal;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .terminal-titlebar-dot:nth-of-type(3) {
+            display: none;
+          }
+          .terminal-contact-row {
+            grid-template-columns: 16px minmax(0, 1fr);
+          }
+          .terminal-contact-row > span:nth-of-type(2) {
+            grid-column: 2;
+          }
+          .terminal-contact-row > a,
+          .terminal-contact-row > span:last-child {
+            grid-column: 2;
+          }
+          .terminal-ascii {
+            font-size: 3.2px !important;
+          }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+          .terminal-body {
+            padding-top: 54px !important;
+          }
+          .terminal-titlebar {
+            padding-top: 7px !important;
+            padding-bottom: 7px !important;
+          }
+          .terminal-input-row {
+            padding-top: 7px !important;
+            padding-bottom: calc(7px + env(safe-area-inset-bottom)) !important;
+          }
+          .terminal-window {
+            padding-bottom: 72px !important;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          * { scroll-behavior: auto !important; }
+        }
       `}</style>
 
       <div style={s.term} onClick={() => inputRef.current?.focus()}>
-        <div style={s.titlebar}>
-          <div style={s.dot("#ff5f56")} />
-          <div style={s.dot("#ffbd2e")} />
-          <div style={s.dot("#27c93f")} />
-          <span style={s.titleText}>
+        <div className="terminal-titlebar" style={s.titlebar}>
+          <div className="terminal-titlebar-dot" style={s.dot("#ff5f56")} />
+          <div className="terminal-titlebar-dot" style={s.dot("#ffbd2e")} />
+          <div className="terminal-titlebar-dot" style={s.dot("#27c93f")} />
+          <span className="terminal-title-text" style={s.titleText}>
             {USER}@{HOSTNAME}: ~
           </span>
         </div>
 
-        <div style={s.window}>
-          <div style={s.body}>
+        <div className="terminal-window" style={s.window}>
+          <div className="terminal-body" style={s.body}>
             {history.map((entry, i) => (
               <HistoryEntry key={i} input={entry.input} output={entry.output} />
             ))}
@@ -568,14 +730,15 @@ export default function TerminalPortfolio() {
           </div>
         </div>
 
-        <div style={s.inputRow}>
-          <div style={s.inputInner}>
+        <div className="terminal-input-row" style={s.inputRow}>
+          <div className="terminal-input-inner" style={s.inputInner}>
             <span style={s.ps1}>{USER}</span>
             <span style={s.at}>@</span>
             <span style={s.host}>{HOSTNAME}</span>
             <span style={s.at}>:~$</span>
             <input
               ref={inputRef}
+              className="terminal-input"
               style={s.input}
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
